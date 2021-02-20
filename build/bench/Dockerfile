@@ -20,7 +20,6 @@ RUN apt-get update -y && apt-get install  \
     cron \
     curl \
     vim \
-    sudo \
     iputils-ping \
     watch \
     tree \
@@ -64,8 +63,7 @@ RUN if [ `uname -m` = 'aarch64' ]; then export ARCH=arm64; fi \
 
 # Create new user with home directory, improve docker compatibility with UID/GID 1000, add user to sudo group, allow passwordless sudo, switch to that user and change directory to user home directory
 RUN groupadd -g 1000 frappe
-RUN useradd --no-log-init -r -m -u 1000 -g 1000 -G  sudo frappe
-RUN echo "frappe ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN useradd --no-log-init -r -m -u 1000 -g 1000 frappe
 USER frappe
 WORKDIR /home/frappe
 

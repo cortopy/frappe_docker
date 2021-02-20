@@ -130,6 +130,8 @@ elif [ "$1" = 'drop' ]; then
   exit
 
 elif [ "$1" = 'migrate' ]; then
+  checkConfigExists
+  checkConnection
 
   . /home/frappe/frappe-bench/env/bin/activate \
     && python /home/frappe/frappe-bench/commands/migrate.py
@@ -142,6 +144,8 @@ elif [ "$1" = 'doctor' ]; then
   exit
 
 elif [ "$1" = 'backup' ]; then
+  checkConfigExists
+  checkConnection
 
   . /home/frappe/frappe-bench/env/bin/activate
   python /home/frappe/frappe-bench/commands/backup.py

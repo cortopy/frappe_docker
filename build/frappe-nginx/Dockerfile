@@ -17,9 +17,12 @@ RUN apt-get update -y \
     && . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION} \
     && nvm use v${NODE_VERSION} && npm install -g yarn
 
-WORKDIR /home/frappe/frappe-bench
-RUN mkdir -p /home/frappe/frappe-bench/sites \
+RUN groupadd -g 1000 frappe \
+    && useradd --no-log-init -r -m -u 1000 -g 1000 frappe \
+    && mkdir -p /home/frappe/frappe-bench/sites \
     && echo "frappe" > /home/frappe/frappe-bench/sites/apps.txt
+
+WORKDIR /home/frappe/frappe-bench
 
 ARG GIT_BRANCH=develop
 RUN mkdir -p apps sites/assets/css  \
@@ -43,15 +46,20 @@ RUN mkdir -p /home/frappe/frappe-bench/sites/assets/frappe/ \
     && cp -R /home/frappe/frappe-bench/apps/frappe/frappe/public/* /home/frappe/frappe-bench/sites/assets/frappe \
     && cp -R /home/frappe/frappe-bench/apps/frappe/node_modules /home/frappe/frappe-bench/sites/assets/frappe/
 
-FROM nginx:latest
+FROM bitnami/nginx:1.18.0-debian-10-r269
 COPY --from=0 /home/frappe/frappe-bench/sites /var/www/html/
 COPY --from=0 /var/www/error_pages /var/www/
-COPY build/common/nginx-default.conf.template /etc/nginx/conf.d/default.conf.template
+COPY build/common/nginx-default.conf.template /opt/bitnami/nginx/conf/server_blocks/default.conf.template
 COPY build/frappe-nginx/docker-entrypoint.sh /
 
-RUN apt-get update && apt-get install -y rsync && apt-get clean \
+USER 0
+
+RUN install_packages rsync gettext-base \
     && echo "#!/bin/bash" > /rsync \
-    && chmod +x /rsync
+    && chmod +x /rsync \
+    && chown -R 1000:1000 /var/www
+
+USER 1000
 
 VOLUME [ "/assets" ]
 

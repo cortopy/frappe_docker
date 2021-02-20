@@ -13,6 +13,8 @@ ENV PATH="/home/frappe/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 # Install dependencies
 WORKDIR /home/frappe/frappe-bench
 RUN apt-get update -y && apt-get install \
+    # for istio job commands \
+    curl \
     # for frappe framework
     git \
     mariadb-client \

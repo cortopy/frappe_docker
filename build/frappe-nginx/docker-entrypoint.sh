@@ -38,7 +38,9 @@ envsubst '${FRAPPE_PY}
     ${FRAPPE_SOCKETIO}
     ${SOCKETIO_PORT}
     ${HTTP_TIMEOUT}' \
-    < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+    < /opt/bitnami/nginx/conf/server_blocks/default.conf.template > /opt/bitnami/nginx/conf/server_blocks/default.conf
+
+rm /opt/bitnami/nginx/conf/server_blocks/default.conf.template
 
 echo "Waiting for frappe-python to be available on $FRAPPE_PY port $FRAPPE_PY_PORT"
 timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' $FRAPPE_PY $FRAPPE_PY_PORT

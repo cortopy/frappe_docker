@@ -7,7 +7,7 @@ upstream socketio-server {
 }
 
 server {
-    listen 80;
+    listen 8080 default_server;
     server_name $http_host;
     root /var/www/html;
 
